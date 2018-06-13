@@ -1,1 +1,5 @@
 .idea/
+virtual/
+.ipynb_checkpoints/
+virtualenvprop.txt
+
