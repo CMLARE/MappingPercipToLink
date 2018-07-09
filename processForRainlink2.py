@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[2]:
+# In[8]:
 
 
 import pandas as pd
@@ -10,7 +10,7 @@ from shutil import copy
 import geopy.distance
 
 
-# In[187]:
+# In[9]:
 
 
 data_root = "/home/gayan/Desktop/CMLARE/Data"
@@ -25,7 +25,7 @@ unprocessed_folder = rootUnprocessed_folder + unprocessed_folder
 test_file = unprocessed_folder+"/PM_IG30028_15_201805050000_01.csv"
 
 
-# In[188]:
+# In[10]:
 
 
 link_data = []
@@ -42,7 +42,7 @@ processed_data_all = []
 processed_file_field_names = ["ID","Pmax","Pmin","XStart","YStart","XEnd","YEnd","DateTime","PathLength","Frequency"]
 
 
-# In[189]:
+# In[11]:
 
 
 directory = os.listdir(unprocessed_folder)
@@ -57,13 +57,13 @@ for file in correct_files:
     copy(src=unprocessed_folder+"/"+file,dst=processed_folder)
 
 
-# In[190]:
+# In[12]:
 
 
 links = pd.read_csv(links_file)
 
 
-# In[191]:
+# In[13]:
 
 
 def calcPathLength(processed_data):
@@ -71,9 +71,11 @@ def calcPathLength(processed_data):
     start_cord = (processed_data["XStart"],processed_data["YStart"])
     end_cord = (processed_data["XEnd"],processed_data["YEnd"])
     return geopy.distance.vincenty(start_cord, end_cord).km
+def formatDate(processed_data):
+    return processed_data["DateTime"].replace("-","").replace(" ","").replace(":","")[:-2]
 
 
-# In[192]:
+# In[14]:
 
 
 def process_file(data_file):
@@ -90,10 +92,11 @@ def process_file(data_file):
     data = pd.concat([source1Data,source2Data])
     data = data.dropna()
     data["PathLength"] = data.apply (lambda row: calcPathLength (row),axis=1)
+    data["DateTime"] = data.apply(lambda row: formatDate (row), axis=1)
     link_data = pd.concat([link_data,data])
 
 
-# In[193]:
+# In[15]:
 
 
 def process_all():
@@ -116,7 +119,7 @@ def process_all():
 process_all()
 
 
-# In[195]:
+# In[17]:
 
 
 link_data.to_csv(processed_file)
